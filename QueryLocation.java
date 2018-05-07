@@ -1,9 +1,11 @@
 
 public class QueryLocation {
+	private final String word;
 	private final String fileName;
 	private final String context;
 	
-	public QueryLocation(String fileName, String context) {
+	public QueryLocation(String word, String fileName, String context) {
+		this.word = word;
 		this.fileName = fileName;
 		this.context = context;
 	}
@@ -14,5 +16,13 @@ public class QueryLocation {
 	
 	public String getContext() {
 		return context;
+	}
+	
+	public String getWord() {
+		return word;
+	}
+	
+	public String toString() {
+		return String.format("The word %s is found in file %s. %s", this.word, this.fileName, this.context);
 	}
 }

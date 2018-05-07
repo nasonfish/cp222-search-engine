@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import org.jsoup.nodes.Document;
 
@@ -17,6 +18,20 @@ public class Day11 {
 		File parentDir = new File(args[0]);
 		instance.loadFiles(parentDir);
 		System.out.println(instance.dataMap.keySet());
+		Scanner s = new Scanner(System.in);
+		System.out.print("Enter Query: ");
+		while(s.hasNextLine()) {
+			String query = s.nextLine();
+			QueryResult result = instance.dataMap.get(query);
+			if (result == null) {
+				System.out.println("Not found.");
+			} else {
+				for(QueryLocation location : result.getLocations()) {
+					System.out.println(location.toString());
+				}
+			}
+			System.out.print("Enter Query: ");
+		}
 	}
 	
 	public Day11() {

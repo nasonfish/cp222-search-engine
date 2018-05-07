@@ -18,7 +18,7 @@ public class QueryResult {
 	}
 	
 	public void addLocation(String fileName, String context) {
-		this.locations.add(new QueryLocation(fileName, context));
+		this.locations.add(new QueryLocation(this.word, fileName, context));
 	}
 	
 }
