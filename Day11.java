@@ -17,7 +17,7 @@ public class Day11 {
 		Day11 instance = new Day11();
 		File parentDir = new File(args[0]);
 		instance.loadFiles("", parentDir);
-		System.out.println(instance.dataMap.keySet());
+		System.out.println(instance.dataMap.size());
 		Scanner s = new Scanner(System.in);
 		System.out.print("Enter Query: ");
 		while(s.hasNextLine()) {
