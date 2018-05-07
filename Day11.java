@@ -1,7 +1,7 @@
 import java.io.File;
 import java.util.HashMap;
 
-import org.w3c.dom.Document;
+import org.jsoup.nodes.Document;
 
 public class Day11 {
 	
@@ -29,18 +29,16 @@ public class Day11 {
 		}
 		if(parentDir.isDirectory()) {
 			for(String child : parentDir.list()) {
-				System.out.println(parentDir.getAbsolutePath() + "/" + child);
-				loadFiles(new File(parentDir.getAbsolutePath() + child));
+				loadFiles(new File(parentDir.getAbsolutePath() + "/" + child));
 			}
 			return;
 		}
 		assert(parentDir.isFile());
 		Document doc = DataUtils.pullDocument(parentDir);
-		this.loadText(parentDir.getAbsolutePath(), doc.getTextContent());
+		this.loadText(parentDir.getAbsolutePath(), doc.text());
 	}
 	
 	public void loadText(String path, String content) {
-		System.out.println("loded?");
 		for(String word : content.split("[^a-zA-Z]")) {
 			String index = word.toLowerCase();
 			QueryResult qr = dataMap.get(index);
