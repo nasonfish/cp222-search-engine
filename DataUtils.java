@@ -12,12 +12,12 @@ import org.jsoup.Jsoup;
  */
 public class DataUtils {
 	public static Document pullDocument(File file) {
-			try {
-				return Jsoup.parse(file, null);
-			} catch (IOException e) {
-				System.out.println("an error occured trying to read the soup.");
-				System.exit(1);
-				return null;
-			}
+		try {
+			return Jsoup.parse(file, null);
+		} catch (IOException e) {
+			System.out.println("An error occured trying to read the soup.");
+			System.exit(1);
+			return null;
+		}
 	}
 }

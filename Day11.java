@@ -16,7 +16,7 @@ public class Day11 {
 		}
 		Day11 instance = new Day11();
 		File parentDir = new File(args[0]);
-		instance.loadFiles(parentDir);
+		instance.loadFiles("", parentDir);
 		System.out.println(instance.dataMap.keySet());
 		Scanner s = new Scanner(System.in);
 		System.out.print("Enter Query: ");
@@ -32,36 +32,50 @@ public class Day11 {
 			}
 			System.out.print("Enter Query: ");
 		}
+		s.close();
 	}
 	
 	public Day11() {
 		this.dataMap = new HashMap<String, QueryResult>();
 	}
 	
-	public void loadFiles(File parentDir) {
+	public void loadFiles(String parent, File parentDir) {
 		if(!parentDir.exists()) {
 			return;
 		}
 		if(parentDir.isDirectory()) {
 			for(String child : parentDir.list()) {
-				loadFiles(new File(parentDir.getAbsolutePath() + "/" + child));
+				loadFiles(parent + parentDir.getName() + "/", new File(parentDir.getAbsolutePath() + "/" + child));
 			}
 			return;
 		}
 		assert(parentDir.isFile());
 		Document doc = DataUtils.pullDocument(parentDir);
-		this.loadText(parentDir.getAbsolutePath(), doc.text());
+		this.loadText(parent + parentDir.getName(), doc.text());
 	}
 	
 	public void loadText(String path, String content) {
-		for(String word : content.split("[^a-zA-Z]")) {
+		String[] words = content.split("[^a-zA-Z]+");
+		for(int i = 0; i < words.length; i++) {
+			if(words[i] == "") continue;
+			String word = words[i];
 			String index = word.toLowerCase();
 			QueryResult qr = dataMap.get(index);
 			if(qr == null) {
 				qr = new QueryResult(index);
 				dataMap.put(index, qr);
 			}
-			qr.addLocation(path, word); // TODO make word into context-- we'll have to change our loop.
+			qr.addLocation(path, getSurrounding(words, i)); // TODO make word into context-- we'll have to change our loop.
 		}
+	}
+	
+	public static String getSurrounding(String[] words, int i) {
+		String a = "";
+		int context = 7;
+		for(int j = i-context; j < i+context; j++) {
+			if (j < 0 || j >= words.length) continue;
+			a += words[j] + " ";
+		}
+		return a;
 	}
 }
