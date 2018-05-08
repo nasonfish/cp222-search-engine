@@ -1,5 +1,5 @@
 
-public class QueryLocation {
+public class QueryLocation implements Comparable<QueryLocation> {
 	private final String word;
 	private final String fileName;
 	private final String context;
@@ -24,5 +24,9 @@ public class QueryLocation {
 	
 	public String toString() {
 		return String.format("The word %s is found in file %s. %s", this.word, this.fileName, this.context);
+	}
+	
+	public int compareTo(QueryLocation other) {
+		return this.getFileName().compareTo(other.getFileName());
 	}
 }

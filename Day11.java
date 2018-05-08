@@ -43,7 +43,11 @@ public class Day11 {
 		System.out.print("Enter Query: ");
 		while(s.hasNextLine()) {
 			String query = s.nextLine();
+			// split query
+			// for each, get Query Result
+			// loop through each query result and compare the amounts on each file.
 			QueryResult result = instance.dataMap.get(query);
+			//for (QueryLocation a : result.getLocations()) a.getFileName()
 			if (result == null) {
 				System.out.println("Not found.");
 			} else {
