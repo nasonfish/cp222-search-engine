@@ -4,13 +4,34 @@ import java.util.Scanner;
 
 import org.jsoup.nodes.Document;
 
+/**
+ * Search Engine -- Group Project assigned on Day 11.
+ * 
+ * This program takes in a site directory as an argument,
+ * and indexes that site for searching. The program reads in the site,
+ * puts each word into a HashMap of Query Results (containing a list of QueryLocations),
+ * and when that word is searched for, we output our QueryLocations-- where the word
+ * was found in the site we indexed.
+ * 
+ * @author Daniel Barnes '21 and Elise Glaser '20
+ *
+ */
 public class Day11 {
 	
+	/**
+	 * Our main HashMap, which holds a QueryResult object for each
+	 * String word we find in the website.
+	 */
 	private HashMap<String, QueryResult> dataMap;
 	
+	/**
+	 * Main method
+	 * @param args: args[0] should be a relative or absolute path to the site directory
+	 * we want to index and search.
+	 */
 	public static void main(String[] args) {
 		if(args.length < 1) {
-			System.out.println(String.format("Usage: java Day11 <site-directory>"));
+			System.out.println(String.format("Usage: java -cp jsoup.jar:. Day11 <site-directory>"));
 			System.exit(1);
 			return;
 		}
@@ -35,10 +56,18 @@ public class Day11 {
 		s.close();
 	}
 	
+	/**
+	 * Instantiate the class-- initialize a new HashMap.
+	 */
 	public Day11() {
 		this.dataMap = new HashMap<String, QueryResult>();
 	}
 	
+	/**
+	 * Load in the files in this directory recursively.
+	 * @param parent The string at the beginning of the directory name. "" for the initial call.
+	 * @param parentDir A File object for the file we're recursively loading files into our index from.
+	 */
 	public void loadFiles(String parent, File parentDir) {
 		if(!parentDir.exists()) {
 			return;
@@ -54,6 +83,14 @@ public class Day11 {
 		this.loadText(parent + parentDir.getName(), doc.text());
 	}
 	
+	/**
+	 * Given the path of the file we're reading from,
+	 * and the text content of the file, load each word individually into our HashMap
+	 * as QueryLocation objects to be stored in a QueryResult.
+	 * @param path String path to the file we're reading from.
+	 * @param content String content of the text file. We split by the regex [^a-zA-Z]+,
+	 * which means we get only words which use the alphabet, and no special characters.
+	 */
 	public void loadText(String path, String content) {
 		String[] words = content.split("[^a-zA-Z]+");
 		for(int i = 0; i < words.length; i++) {
@@ -69,6 +106,13 @@ public class Day11 {
 		}
 	}
 	
+	/**
+	 * Static method for getting the context around a word. Given an array of words,
+	 * we get
+	 * @param words
+	 * @param i
+	 * @return
+	 */
 	public static String getSurrounding(String[] words, int i) {
 		String a = "";
 		int context = 7;
