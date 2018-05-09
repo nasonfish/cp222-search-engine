@@ -127,7 +127,7 @@ public class Day11 {
 				qr = new QueryResult(index);
 				dataMap.put(index, qr);
 			}
-			qr.addLocation(path, getSurrounding(words, i)); // TODO make word into context-- we'll have to change our loop.
+			qr.addLocation(path, getSurrounding(words, i));
 		}
 	}
 
