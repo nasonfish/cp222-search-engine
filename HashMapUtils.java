@@ -95,4 +95,15 @@ public class HashMapUtils {
 		f = new File("QueryResult.java");
 		System.out.println(md5(f));
 	}
+
+	public static void mergeInto(HashMap<String, QueryResult> dataMap, HashMap<String, QueryResult> tempData) {
+		for(Entry<String, QueryResult> entry : tempData.entrySet()) {
+			if(dataMap.containsKey(entry.getKey())) {
+				dataMap.get(entry.getKey()).merge(entry.getValue());
+			} else {
+				dataMap.put(entry.getKey(), entry.getValue());
+			}
+		}
+		
+	}
 }

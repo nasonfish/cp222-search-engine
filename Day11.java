@@ -126,7 +126,7 @@ public class Day11 {
 		try {
 			tempData = HashMapUtils.read(new File(path), dataLocation, verbose);
 		} catch (NoSuchAlgorithmException | IOException e1) {
-			System.out.println("Something went wrong trying to read the data in. whatever");
+			System.out.println("Something went wrong trying to read the data in.");
 		}
 		if(tempData != null) {
 			this.dataMap.putAll(tempData);
@@ -152,11 +152,11 @@ public class Day11 {
 		try {
 			HashMapUtils.dump(dataLocation, new File(path), tempData, verbose);
 		} catch (NoSuchAlgorithmException | IOException e) {
-			System.out.println("could not write cache files.");
+			System.out.println("Could not write cache files.");
 			e.printStackTrace();
 			System.exit(1);
 		}
-		this.dataMap.putAll(tempData);
+		HashMapUtils.mergeInto(this.dataMap, tempData);
 	}
 	
 	/**
