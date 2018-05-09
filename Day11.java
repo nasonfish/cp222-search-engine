@@ -154,7 +154,7 @@ public class Day11 {
 			System.out.println("Something went wrong trying to read the data in.");
 		}
 		if(tempData != null) {
-			this.dataMap.putAll(tempData);
+			HashMapUtils.mergeInto(this.dataMap, tempData);
 			return;
 		}
 
