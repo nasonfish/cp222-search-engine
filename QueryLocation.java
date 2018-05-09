@@ -59,6 +59,10 @@ public class QueryLocation implements Comparable<QueryLocation> {
 		return String.format("The word %s is found in file %s. %s", this.word, this.fileName, this.context);
 	}
 	
+	public String serialize() {
+		return String.format("%s*%s", this.fileName, this.context);
+	}
+	
 	/**
 	 * We are comparable, in order to allow the comparison of locations
 	 * during multi-word queries.

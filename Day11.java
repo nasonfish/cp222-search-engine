@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -24,6 +26,12 @@ public class Day11 {
 	 */
 	private HashMap<String, QueryResult> dataMap;
 	
+	private final boolean verbose;
+	
+	public boolean getVerbosity() {
+		return verbose;
+	}
+	
 	/**
 	 * Main method
 	 * @param args: args[0] should be a relative or absolute path to the site directory
@@ -31,12 +39,29 @@ public class Day11 {
 	 */
 	public static void main(String[] args) {
 		if(args.length < 1) {
-			System.out.println(String.format("Usage: java -cp jsoup.jar:. Day11 <site-directory>"));
+			System.out.println(String.format("Usage: java -cp jsoup.jar:. Day11 [-v] <site-directory>"));
 			System.exit(1);
 			return;
 		}
-		Day11 instance = new Day11();
-		File parentDir = new File(args[0]);
+		boolean verbose = false;
+		File parentDir = null;
+		for(String arg : args) {
+			if(arg.startsWith("-")) {
+				if(arg.equals("-v")) {
+					verbose = true;
+				} else {
+					System.out.println("Misunderstood flag. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
+				}
+			} else if (parentDir == null){
+				parentDir = new File(arg);
+			} else {
+				System.out.println("Extraneous argument. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
+			}
+		}
+		if(parentDir == null) {
+			System.out.println("Directory not provided. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
+		}
+		Day11 instance = new Day11(verbose);
 		instance.loadFiles("", parentDir);
 		System.out.println(instance.dataMap.size());
 		Scanner s = new Scanner(System.in);
@@ -63,8 +88,9 @@ public class Day11 {
 	/**
 	 * Instantiate the class-- initialize a new HashMap.
 	 */
-	public Day11() {
+	public Day11(boolean verbose) {
 		this.dataMap = new HashMap<String, QueryResult>();
+		this.verbose = verbose;
 	}
 	
 	/**
@@ -83,8 +109,7 @@ public class Day11 {
 			return;
 		}
 		assert(parentDir.isFile());
-		Document doc = DataUtils.pullDocument(parentDir);
-		this.loadText(parent + parentDir.getName(), doc.text());
+		this.loadText(parent + parentDir.getName(), parentDir);
 	}
 	
 	/**
@@ -92,22 +117,46 @@ public class Day11 {
 	 * and the text content of the file, load each word individually into our HashMap
 	 * as QueryLocation objects to be stored in a QueryResult.
 	 * @param path String path to the file we're reading from.
-	 * @param content String content of the text file. We split by the regex [^a-zA-Z]+,
+	 * @param parentDir File which we grab the text from. We split by the regex [^a-zA-Z]+,
 	 * which means we get only words which use the alphabet, and no special characters.
 	 */
-	public void loadText(String path, String content) {
+	public void loadText(String path, File parentDir) {
+		HashMap<String, QueryResult> tempData = null;
+		File dataLocation = new File("./.data/" + path);
+		try {
+			tempData = HashMapUtils.read(new File(path), dataLocation, verbose);
+		} catch (NoSuchAlgorithmException | IOException e1) {
+			System.out.println("Something went wrong trying to read the data in. whatever");
+		}
+		if(tempData != null) {
+			this.dataMap.putAll(tempData);
+			return;
+		}
+		
+		tempData = new HashMap<String, QueryResult>();
+		
+		Document doc = DataUtils.pullDocument(parentDir);
+		String content = doc.text();
 		String[] words = content.split("[^a-zA-Z]+");
 		for(int i = 0; i < words.length; i++) {
 			if(words[i] == "") continue;
 			String word = words[i];
 			String index = word.toLowerCase();
-			QueryResult qr = dataMap.get(index);
+			QueryResult qr = tempData.get(index);
 			if(qr == null) {
 				qr = new QueryResult(index);
-				dataMap.put(index, qr);
+				tempData.put(index, qr);
 			}
 			qr.addLocation(path, getSurrounding(words, i));
 		}
+		try {
+			HashMapUtils.dump(dataLocation, new File(path), tempData, verbose);
+		} catch (NoSuchAlgorithmException | IOException e) {
+			System.out.println("could not write cache files.");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		this.dataMap.putAll(tempData);
 	}
 	
 	/**
