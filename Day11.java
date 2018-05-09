@@ -27,7 +27,7 @@ public class Day11 {
 	private HashMap<String, QueryResult> dataMap;
 
 	private final boolean verbose;
-	
+
 	private final File parentDir;
 
 	public boolean getVerbosity() {
@@ -47,7 +47,7 @@ public class Day11 {
 		}
 		boolean verbose = false;
 		File parentDir = null;
-		
+
 		// First, we parse the arguments passed into the program at runtime.
 		for(String arg : args) {
 			if(arg.startsWith("-")) {
@@ -68,12 +68,12 @@ public class Day11 {
 			System.out.println("Directory not provided. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
 			System.exit(1);
 		}
-		
+
 		Day11 instance = new Day11(verbose, parentDir);
 		instance.go();
 	}
-	
-	
+
+
 	/**
 	 * This method is the main engine for our program-- we load in the files from
 	 * the website we were passed, and then allow the user to search in our index.
@@ -85,16 +85,16 @@ public class Day11 {
 		if(verbose) System.out.println(String.format("Done in %d ms", end - time));
 		this.userSearch();
 	}
-	
+
 	/**
 	 * This is a loop which reads in input, searches our index, and returns a list of results.
-	 * 
+	 *
 	 * We allow for multiword queries here, and we split the search by any character which
 	 * is not alphabetical: the regular expression [^a-zA-Z]+.
 	 */
 	public void userSearch() {
 		Scanner s = new Scanner(System.in);
-		
+
 		System.out.print("Enter Query: ");
 		queryLoop:
 		while(s.hasNextLine()) { // for each new query,
@@ -106,22 +106,22 @@ public class Day11 {
 				if(res == null) {
 					System.out.println(queries[i] + " was not found.");
 					System.out.print("Enter Query: ");
-					continue queryLoop;
+					continue queryLoop; //If there is no result, web pages aren't returned but the user is prompted for a new query
 				}
-				outerLoop:
+				outerLoop: //Loop to only obtain locations with all words
 				for(QueryLocation l : res.getLocations()) {
 					for(WordGroupLocation knownLocation : allLocs) {
 						if(l.getFileName().equals(knownLocation.getLoc().getFileName())) {
-							knownLocation.addWord(l.getWord());
+							knownLocation.addWord(l.getWord()); //If the location is already known, it is added to the word group
 							continue outerLoop;
 						}
 					}
-					allLocs.add(new WordGroupLocation(l));
+					allLocs.add(new WordGroupLocation(l)); //otherwise a new word group is created for the location
 				}
 			}
 			boolean printed = false;
 			for(WordGroupLocation knownLocation : allLocs) {
-				if(knownLocation.getWords().size() == queries.length) {
+				if(knownLocation.getWords().size() == queries.length) { //if the word group contains all words in the query 
 					System.out.println(knownLocation.getLoc().toString(queries));
 					printed = true;
 				}
