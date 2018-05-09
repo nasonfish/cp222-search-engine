@@ -59,7 +59,11 @@ public class QueryResult {
 		this.locations.add(new QueryLocation(this.word, fileName, context));
 	}
 
-
+	/**
+	 * Merge {@param other}'s locations into this QueryResult's locations.
+	 * @param other Another QueryResult with locations to merge.
+	 * The words should be the same when merging.
+	 */
 	public void merge(QueryResult other) {
 		this.locations.addAll(other.getLocations());
 	}
