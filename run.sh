@@ -1,4 +1,4 @@
-javac -cp jsoup.jar:* *.java
+javac -cp jsoup.jar:. *.java
 pwd
-java -cp jsoup.jar:* /Users/nasonfish/Projects/Java/CP222/Day\ 11/Day11 wildanimalsonline.com
+java -cp jsoup.jar:. Day11 -v wildanimalsonline.com
 
