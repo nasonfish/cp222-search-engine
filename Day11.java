@@ -26,13 +26,13 @@ public class Day11 {
 	* String word we find in the website.
 	*/
 	private HashMap<String, QueryResult> dataMap;
-	
+
 	private final boolean verbose;
-	
+
 	public boolean getVerbosity() {
 		return verbose;
 	}
-	
+
 	/**
 	* Main method
 	* @param args: args[0] should be a relative or absolute path to the site directory
@@ -84,34 +84,35 @@ public class Day11 {
 					for(QueryLocation location : result.getLocations()) {
 						alllocs.add(location);
 					}
-					for (int x = 0; x < alllocs.size(); x++) {
-						for (int y = x+1; y < alllocs.size(); y++) {
-							QueryLocation loc1 = alllocs.get(x);
-							QueryLocation loc2 = alllocs.get(y);
-							if (loc1.getFileName().equals(loc2.getFileName())){
-								loc1.addCount();
-								alllocs.remove(loc2);
-							}
-						}
-					}
-					for (int z=0; z< alllocs.size(); z++){
-						commonlocs.add(alllocs.get(z));
-					}
-					while (commonlocs.size()>0){
-						System.out.println(commonlocs.peek().getCount());
-						System.out.println(commonlocs.poll().toString(queries));
+				}
+			}
+			for (int x = 0; x < alllocs.size(); x++) {
+				for (int y = x+1; y < alllocs.size(); y++) {
+					QueryLocation loc1 = alllocs.get(x);
+					QueryLocation loc2 = alllocs.get(y);
+					if (loc1.getFileName().equals(loc2.getFileName())){
+						loc1.addCount();
+						alllocs.remove(loc2);
 					}
 				}
 			}
-		System.out.print("Enter Query: ");
+			for (int z=0; z< alllocs.size(); z++){
+				commonlocs.add(alllocs.get(z));
+			}
+			while (commonlocs.size()>0){
+				System.out.println(commonlocs.poll().toString(queries));
+			}
+
+
+			System.out.print("Enter Query: ");
 		}
 		s.close();
 	}
 
 
 	/**
-	 * Instantiate the class-- initialize a new HashMap.
-	 */
+	* Instantiate the class-- initialize a new HashMap.
+	*/
 	public Day11(boolean verbose) {
 		this.dataMap = new HashMap<String, QueryResult>();
 		this.verbose = verbose;
@@ -156,9 +157,9 @@ public class Day11 {
 			this.dataMap.putAll(tempData);
 			return;
 		}
-		
+
 		tempData = new HashMap<String, QueryResult>();
-		
+
 		Document doc = DataUtils.pullDocument(parentDir);
 		String content = doc.text();
 		String[] words = content.split("[^a-zA-Z]+");
