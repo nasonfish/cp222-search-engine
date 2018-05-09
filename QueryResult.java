@@ -62,7 +62,6 @@ public class QueryResult {
 
 	public void merge(QueryResult other) {
 		this.locations.addAll(other.getLocations());
-		
 	}
 	
 }
