@@ -63,7 +63,10 @@ public class Day11 {
 			System.out.println("Directory not provided. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
 		}
 		Day11 instance = new Day11(verbose);
+		long time = System.currentTimeMillis();
 		instance.loadFiles("", parentDir);
+		long end = System.currentTimeMillis();
+		if(verbose) System.out.println(String.format("Done in %d ms", end - time));
 		System.out.println(instance.dataMap.size());
 		ArrayList<QueryLocation> alllocs = new ArrayList<QueryLocation>();
 		PriorityQueue<QueryLocation> commonlocs = new PriorityQueue<QueryLocation>();
