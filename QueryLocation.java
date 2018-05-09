@@ -58,6 +58,11 @@ public class QueryLocation {
 		return word;
 	}
 	
+	/**
+	 * Return a serialization of this QueryLocation, to be printed into a file.
+	 * Our format is <fileName>*<context>
+	 * @return String serialization.
+	 */
 	public String serialize() {
 		return String.format("%s*%s", this.fileName, this.context);
 	}
