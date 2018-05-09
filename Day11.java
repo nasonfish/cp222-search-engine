@@ -41,7 +41,7 @@ public class Day11 {
 		instance.loadFiles("", parentDir);
 		System.out.println(instance.dataMap.size());
 		ArrayList<QueryLocation> alllocs = new ArrayList<QueryLocation>();
-		PriorityQueue<QueryLocation> commonlocs= new PriorityQueue<QueryLocation>();
+		PriorityQueue<QueryLocation> commonlocs = new PriorityQueue<QueryLocation>();
 		Scanner s = new Scanner(System.in);
 		System.out.print("Enter Query: ");
 		while(s.hasNextLine()) {
@@ -57,14 +57,14 @@ public class Day11 {
 						alllocs.add(location);
 					}
 					for (int x = 0; x < alllocs.size(); x++) {
-  					for (int y = x+1; y < alllocs.size(); y++) {
+						for (int y = x+1; y < alllocs.size(); y++) {
 							QueryLocation loc1 = alllocs.get(x);
 							QueryLocation loc2 = alllocs.get(y);
-	    				if (loc1.getFileName().equals(loc2.getFileName())){
+							if (loc1.getFileName().equals(loc2.getFileName())){
 								loc1.addCount();
 								alllocs.remove(loc2);
 							}
-  					}
+						}
 					}
 					for (int z=0; z< alllocs.size(); z++){
 						commonlocs.add(alllocs.get(z));
