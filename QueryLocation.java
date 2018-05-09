@@ -5,7 +5,7 @@
  * @author Daniel Barnes '21 and Elise Glaser '20
  *
  */
-public class QueryLocation implements Comparable<QueryLocation> {
+public class QueryLocation {
 	/**
 	 * String word.
 	 */
@@ -18,17 +18,15 @@ public class QueryLocation implements Comparable<QueryLocation> {
 	 * Roughly seven words surrounding the word we found, to output a readable result.
 	 */
 	private final String context;
-	private int count;
 
 	/**
 	 * Initialize fields during instantiation.
 	 */
-	public QueryLocation(String word, String fileName, String context, int count) {
+	public QueryLocation(String word, String fileName, String context) {
 	
 		this.word = word;
 		this.fileName = fileName;
 		this.context = context;
-		this.count = count;
 	}
 
 	/**
@@ -38,15 +36,7 @@ public class QueryLocation implements Comparable<QueryLocation> {
 	public String getFileName() {
 		return fileName;
 	}
-
-	public int getCount(){
-		return count;
-	}
-
-	public void addCount(){
-		count++;
-	}
-
+	
 	public String toString(String[] queries) {
 		String querystring = String.join(" and ", queries);
 		return String.format("%s can be found in file %s. %s", querystring, this.fileName, this.context);
@@ -68,28 +58,7 @@ public class QueryLocation implements Comparable<QueryLocation> {
 		return word;
 	}
 	
-	/**
-	 * Convert to a readable string, to be printed when this location was found by a user's query.
-	 */
-	public String toString() {
-		return String.format("The word %s is found in file %s. %s", this.word, this.fileName, this.context);
-	}
-	
 	public String serialize() {
 		return String.format("%s*%s", this.fileName, this.context);
-	}
-	
-	/**
-	 * We are comparable, in order to allow the comparison of locations
-	 * during multi-word queries.
-	 */
-	public int compareTo(QueryLocation other) {
-		if (this.getCount()>other.getCount()){
-			return -1;
-		}else if (this.getCount()<other.getCount()){
-			return 1;
-		}else{
-			return 0;
-		}
 	}
 }

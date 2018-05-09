@@ -56,7 +56,7 @@ public class QueryResult {
 	 * @param context Roughly seven words of context surrounding the word we found.
 	 */
 	public void addLocation(String fileName, String context) {
-		this.locations.add(new QueryLocation(this.word, fileName, context, 0));
+		this.locations.add(new QueryLocation(this.word, fileName, context));
 	}
 
 

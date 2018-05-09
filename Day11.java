@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.PriorityQueue;
 import java.util.ArrayList;
 import org.jsoup.nodes.Document;
 
@@ -28,6 +27,8 @@ public class Day11 {
 	private HashMap<String, QueryResult> dataMap;
 
 	private final boolean verbose;
+	
+	private final File parentDir;
 
 	public boolean getVerbosity() {
 		return verbose;
@@ -46,64 +47,88 @@ public class Day11 {
 		}
 		boolean verbose = false;
 		File parentDir = null;
+		
+		// First, we parse the arguments passed into the program at runtime.
 		for(String arg : args) {
 			if(arg.startsWith("-")) {
-				if(arg.equals("-v")) {
+				if(arg.equals("-v")) { // verbosity flag (-v)
 					verbose = true;
 				} else {
 					System.out.println("Misunderstood flag. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
+					System.exit(1);
 				}
 			} else if (parentDir == null){
 				parentDir = new File(arg);
 			} else {
 				System.out.println("Extraneous argument. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
+				System.exit(1);
 			}
 		}
 		if(parentDir == null) {
 			System.out.println("Directory not provided. Usage is: java -cp jsoup.jar:. Day11 [-v] <site-directory>");
+			System.exit(1);
 		}
-		Day11 instance = new Day11(verbose);
+		
+		Day11 instance = new Day11(verbose, parentDir);
+		instance.go();
+	}
+	
+	
+	/**
+	 * This method is the main engine for our program-- we load in the files from
+	 * the website we were passed, and then allow the user to search in our index.
+	 */
+	public void go() {
 		long time = System.currentTimeMillis();
-		instance.loadFiles("", parentDir);
+		this.loadFiles("", parentDir);
 		long end = System.currentTimeMillis();
 		if(verbose) System.out.println(String.format("Done in %d ms", end - time));
-		System.out.println(instance.dataMap.size());
-		ArrayList<QueryLocation> alllocs = new ArrayList<QueryLocation>();
-		PriorityQueue<QueryLocation> commonlocs = new PriorityQueue<QueryLocation>();
+		this.userSearch();
+	}
+	
+	/**
+	 * This is a loop which reads in input, searches our index, and returns a list of results.
+	 * 
+	 * We allow for multiword queries here, and we split the search by any character which
+	 * is not alphabetical: the regular expression [^a-zA-Z]+.
+	 */
+	public void userSearch() {
 		Scanner s = new Scanner(System.in);
+		
 		System.out.print("Enter Query: ");
-		while(s.hasNextLine()) {
-			String query = s.nextLine();
-			String[] queries = query.split("[^a-zA-Z]+");
-			for (int i =0; i< queries.length; i++){
-				QueryResult result = instance.dataMap.get(queries[i]);
-				if (result == null) {
-					System.out.println("Not found.");
+		queryLoop:
+		while(s.hasNextLine()) { // for each new query,
+			ArrayList<WordGroupLocation> allLocs = new ArrayList<WordGroupLocation>();
+			String query = s.nextLine().toLowerCase(); // read in what the user typed
+			String[] queries = query.split("[^a-zA-Z]+"); // split it into words
+			for (int i = 0; i < queries.length; i++){ // for each word,
+				QueryResult res = this.dataMap.get(queries[i]);
+				if(res == null) {
+					System.out.println(queries[i] + " was not found.");
+					System.out.print("Enter Query: ");
+					continue queryLoop;
 				}
-				else {
-					for(QueryLocation location : result.getLocations()) {
-						alllocs.add(location);
+				outerLoop:
+				for(QueryLocation l : res.getLocations()) {
+					for(WordGroupLocation knownLocation : allLocs) {
+						if(l.getFileName().equals(knownLocation.getLoc().getFileName())) {
+							knownLocation.addWord(l.getWord());
+							continue outerLoop;
+						}
 					}
+					allLocs.add(new WordGroupLocation(l));
 				}
 			}
-			for (int x = 0; x < alllocs.size(); x++) {
-				for (int y = x+1; y < alllocs.size(); y++) {
-					QueryLocation loc1 = alllocs.get(x);
-					QueryLocation loc2 = alllocs.get(y);
-					if (loc1.getFileName().equals(loc2.getFileName())){
-						loc1.addCount();
-						alllocs.remove(loc2);
-					}
+			boolean printed = false;
+			for(WordGroupLocation knownLocation : allLocs) {
+				if(knownLocation.getWords().size() == queries.length) {
+					System.out.println(knownLocation.getLoc().toString(queries));
+					printed = true;
 				}
 			}
-			for (int z=0; z< alllocs.size(); z++){
-				commonlocs.add(alllocs.get(z));
+			if(!printed) {
+				System.out.println("Could not find a file containing all words in the query.");
 			}
-			while (commonlocs.size()>0){
-				System.out.println(commonlocs.poll().toString(queries));
-			}
-
-
 			System.out.print("Enter Query: ");
 		}
 		s.close();
@@ -113,8 +138,9 @@ public class Day11 {
 	/**
 	* Instantiate the class-- initialize a new HashMap.
 	*/
-	public Day11(boolean verbose) {
+	public Day11(boolean verbose, File parentDir) {
 		this.dataMap = new HashMap<String, QueryResult>();
+		this.parentDir = parentDir;
 		this.verbose = verbose;
 	}
 
