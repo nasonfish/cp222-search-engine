@@ -11,6 +11,12 @@ import org.jsoup.Jsoup;
  * @author Daniel Barnes '21
  */
 public class DataUtils {
+	
+	/**
+	 * Create a Jsoup Document file from a java File object.
+	 * @param file File object
+	 * @return Jsoup Document to be parsed.
+	 */
 	public static Document pullDocument(File file) {
 		try {
 			return Jsoup.parse(file, null);

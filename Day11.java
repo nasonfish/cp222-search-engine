@@ -26,13 +26,16 @@ public class Day11 {
 	*/
 	private HashMap<String, QueryResult> dataMap;
 
+	/**
+	 * Boolean-- for if we should print things out more verbose than normal.
+	 * Triggered by -v.
+	 */
 	private final boolean verbose;
 
+	/**
+	 * The directory of the site we are searching.
+	 */
 	private final File parentDir;
-
-	public boolean getVerbosity() {
-		return verbose;
-	}
 
 	/**
 	* Main method
@@ -72,7 +75,24 @@ public class Day11 {
 		Day11 instance = new Day11(verbose, parentDir);
 		instance.go();
 	}
+	
+	/**
+	* Instantiate the class-- initialize a new HashMap.
+	*/
+	public Day11(boolean verbose, File parentDir) {
+		this.dataMap = new HashMap<String, QueryResult>();
+		this.parentDir = parentDir;
+		this.verbose = verbose;
+	}
 
+
+	/**
+	 * Get the verbosity level.
+	 * @return Boolean
+	 */
+	public boolean getVerbosity() {
+		return verbose;
+	}
 
 	/**
 	 * This method is the main engine for our program-- we load in the files from
@@ -134,16 +154,6 @@ public class Day11 {
 		s.close();
 	}
 
-
-	/**
-	* Instantiate the class-- initialize a new HashMap.
-	*/
-	public Day11(boolean verbose, File parentDir) {
-		this.dataMap = new HashMap<String, QueryResult>();
-		this.parentDir = parentDir;
-		this.verbose = verbose;
-	}
-
 	/**
 	* Load in the files in this directory recursively.
 	* @param parent The string at the beginning of the directory name. "" for the initial call.
@@ -175,55 +185,54 @@ public class Day11 {
 		HashMap<String, QueryResult> tempData = null;
 		File dataLocation = new File("./.data/" + path);
 		try {
+			// tempData will be null UNLESS we were able to read the data successfully.
 			tempData = HashMapUtils.read(new File(path), dataLocation, verbose);
 		} catch (NoSuchAlgorithmException | IOException e1) {
 			System.out.println("Something went wrong trying to read the data in.");
 		}
-		if(tempData != null) {
+		if(tempData != null) { // If we read successfully, merge the data in instead of reading from the file.
 			HashMapUtils.mergeInto(this.dataMap, tempData);
 			return;
 		}
-
+		// No cache found-- read in the data.
 		tempData = new HashMap<String, QueryResult>();
 
 		Document doc = DataUtils.pullDocument(parentDir);
 		String content = doc.text();
 		String[] words = content.split("[^a-zA-Z]+");
-		for(int i = 0; i < words.length; i++) {
+		for(int i = 0; i < words.length; i++) { // for each word,
 			if(words[i] == "") continue;
 			String word = words[i];
 			String index = word.toLowerCase();
-			QueryResult qr = tempData.get(index);
-			if(qr == null) {
-				qr = new QueryResult(index);
+			QueryResult qr = tempData.get(index); // get the appropriate QueryResult.
+			if(qr == null) { // if it doesn't exist,
+				qr = new QueryResult(index); // create a QueryResult with each location.
 				tempData.put(index, qr);
 			}
-			qr.addLocation(path, getSurrounding(words, i));
+			qr.addLocation(path, getSurrounding(words, i)); // Add a location for the word.
 		}
 		try {
-			HashMapUtils.dump(dataLocation, new File(path), tempData, verbose);
+			HashMapUtils.dump(dataLocation, new File(path), tempData, verbose); // We dump the data into ./.data/<filename>
 		} catch (NoSuchAlgorithmException | IOException e) {
-			System.out.println("Could not write cache files.");
-			e.printStackTrace();
-			System.exit(1);
+			System.out.println("ERROR: Could not write cache file.");
 		}
-		HashMapUtils.mergeInto(this.dataMap, tempData);
+		HashMapUtils.mergeInto(this.dataMap, tempData); // Merge the data we created with our entire dataMap.
 	}
 
 	/**
 	* Static method for getting the context around a word. Given an array of words,
-	* we get
-	* @param words
-	* @param i
-	* @return
+	* we get roughly 7 words surrounding this word, to print out in our query result.
+	* @param words The entire file of words
+	* @param i The index where we found the word we were searching for.
+	* @return String, text surrounding and including the word we searched for.
 	*/
 	public static String getSurrounding(String[] words, int i) {
-		String a = "";
+		String temp = "";
 		int context = 7;
 		for(int j = i-context; j < i+context; j++) {
 			if (j < 0 || j >= words.length) continue;
-			a += words[j] + " ";
+			temp += words[j] + " "; // concat the 7 surrounding words if they exist.
 		}
-		return a;
+		return temp;
 	}
 }
