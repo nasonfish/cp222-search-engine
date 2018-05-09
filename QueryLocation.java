@@ -43,7 +43,7 @@ public class QueryLocation implements Comparable<QueryLocation> {
 		return count;
 	}
 
-`	public void addCount(){
+	public void addCount(){
 		count++;
 	}
 
